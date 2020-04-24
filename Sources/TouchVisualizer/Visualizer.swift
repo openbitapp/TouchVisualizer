@@ -151,34 +151,40 @@ extension Visualizer {
         for touch in event.allTouches! {
             let phase = touch.phase
             switch phase {
-            case .began:
-                let view = dequeueTouchView()
-                view.config = Visualizer.sharedInstance.config
-                view.touch = touch
-                view.beginTouch()
-                view.center = touch.location(in: topWindow)
-                topWindow.addSubview(view)
-                log(touch)
-            case .moved:
-                if let view = findTouchView(touch) {
+                case .began:
+                    let view = dequeueTouchView()
+                    view.config = Visualizer.sharedInstance.config
+                    view.touch = touch
+                    view.beginTouch()
                     view.center = touch.location(in: topWindow)
-                }
-                
-                log(touch)
-            case .stationary:
-                log(touch)
-            case .ended, .cancelled:
-                if let view = findTouchView(touch) {
-                    UIView.animate(withDuration: 0.2, delay: 0.0, options: .allowUserInteraction, animations: { () -> Void  in
-                        view.alpha = 0.0
-                        view.endTouch()
-                    }, completion: { [unowned self] (finished) -> Void in
-                        view.removeFromSuperview()
-                        self.log(touch)
-                    })
-                }
-                
-                log(touch)
+                    topWindow.addSubview(view)
+                    log(touch)
+                    break
+                case .moved:
+                    if let view = findTouchView(touch) {
+                        view.center = touch.location(in: topWindow)
+                    }
+                    
+                    log(touch)
+                    break
+                case .stationary:
+                    log(touch)
+                    break
+                case .ended, .cancelled:
+                    if let view = findTouchView(touch) {
+                        UIView.animate(withDuration: 0.2, delay: 0.0, options: .allowUserInteraction, animations: { () -> Void  in
+                            view.alpha = 0.0
+                            view.endTouch()
+                        }, completion: { [unowned self] (finished) -> Void in
+                            view.removeFromSuperview()
+                            self.log(touch)
+                        })
+                    }
+                    
+                    log(touch)
+                    break
+                default:
+                    break
             }
         }
     }
@@ -207,11 +213,23 @@ extension Visualizer {
             
             var phase: String!
             switch touch.phase {
-            case .began: phase = "B"
-            case .moved: phase = "M"
-            case .stationary: phase = "S"
-            case .ended: phase = "E"
-            case .cancelled: phase = "C"
+                case .began:
+                    phase = "B"
+                    break
+                case .moved:
+                    phase = "M"
+                    break
+                case .stationary:
+                    phase = "S"
+                    break
+                case .ended:
+                    phase = "E"
+                    break
+                case .cancelled:
+                    phase = "C"
+                    break
+                default:
+                    break
             }
             
             let x = String(format: "%.02f", view.center.x)
